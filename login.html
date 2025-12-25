@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>COLLEX Login</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #1d976c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      width: 350px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #198754;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>COLLEX Login</h2>
+
+  <input id="email" placeholder="College Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button type="button" onclick="login()">Login</button>
+
+  <p>
+    Don’t have an account?
+    <a href="register.html">Register</a>
+  </p>
+</div>
+
+<script src="./js/main.js"></script>
+</body>
+</html>
