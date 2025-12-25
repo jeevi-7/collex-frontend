@@ -12,7 +12,7 @@ function login() {
     return;
   }
 
-  fetch("http://localhost:5000/login", {
+  fetch("https://collex-backend.onrender.com/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -46,7 +46,7 @@ function register() {
     return;
   }
 
-  fetch("http://localhost:5000/register", {
+  fetch("https://collex-backend.onrender.com/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password })
@@ -90,7 +90,7 @@ function addProduct() {
   reader.readAsDataURL(imageInput.files[0]);
 
   reader.onload = function () {
-    fetch("http://localhost:5000/add-product", {
+    fetch("https://collex-backend.onrender.com/add-product", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -114,7 +114,7 @@ function addProduct() {
 /* =========================
    LOAD PRODUCTS + DELETE (OWNER ONLY)
 ========================= */
-fetch("http://localhost:5000/products")
+fetch("https://collex-backend.onrender.com/products")
   .then(res => res.json())
   .then(products => {
     const list = document.getElementById("productList");
@@ -176,7 +176,7 @@ function deleteProduct(id) {
 
   const email = localStorage.getItem("collexUser");
 
-  fetch(`http://localhost:5000/delete-product/${id}?email=${email}`, {
+  fetch(`https://collex-backend.onrender.com/delete-product/${id}?email=${email}`, {
     method: "DELETE"
   })
     .then(res => res.json())
@@ -186,3 +186,4 @@ function deleteProduct(id) {
     })
     .catch(() => alert("Delete failed"));
 }
+
