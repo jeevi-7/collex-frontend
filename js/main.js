@@ -176,9 +176,12 @@ fetch(`${API}/products`)
             <div class="card-footer bg-white">
               <a class="btn btn-success btn-sm w-100"
                  target="_blank"
-                 href="https://wa.me/${p.phone}?text=Hi! I am interested in your product: ${p.title}">
-                WhatsApp Seller
+                 href="https://wa.me/${p.phone}?text=${encodeURIComponent(
+                  'Hi! I am interested in your product: ' + p.title
+                 )}">
+                 WhatsApp Seller
               </a>
+
               ${deleteBtn}
             </div>
           </div>
@@ -211,4 +214,5 @@ function deleteProduct(id) {
     })
     .catch(() => alert("Delete failed"));
 }
+
 
