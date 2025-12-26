@@ -216,3 +216,33 @@ function deleteProduct(id) {
 }
 
 
+// =========================
+// LOAD PROFILE
+// =========================
+if (window.location.pathname.includes("profile.html")) {
+  const email = localStorage.getItem("collexUser");
+
+  if (!email) {
+    window.location.href = "login.html";
+  }
+
+  fetch(`${API}/profile/${email}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("userName").innerText = data.user.name;
+      document.getElementById("userEmail").innerText = data.user.email;
+
+      const list = document.getElementById("myProducts");
+      if (data.products.length === 0) {
+        list.innerHTML = "<p>No products added yet</p>";
+      }
+
+      data.products.forEach(p => {
+        list.innerHTML += `
+          <div class="border p-2 mb-2">
+            <b>${p.title}</b> – ₹${p.price} (${p.type})
+          </div>
+        `;
+      });
+    });
+}
