@@ -1,5 +1,7 @@
 console.log("main.js loaded ✅");
 
+const API = "https://collex-backend.onrender.com";
+
 /* =========================
    LOGIN
 ========================= */
@@ -12,7 +14,7 @@ function login() {
     return;
   }
 
-  fetch("https://collex-backend.onrender.com/login", {
+  fetch(`${API}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -41,12 +43,7 @@ function register() {
     return;
   }
 
-  if (!email.endsWith("@karpagamtech.ac.in")) {
-    alert("Only college email allowed");
-    return;
-  }
-
-  fetch("https://collex-backend.onrender.com/register", {
+  fetch(`${API}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password })
@@ -54,7 +51,7 @@ function register() {
     .then(res => res.json())
     .then(data => {
       alert(data.message);
-      if (data.message === "Registered successfully") {
+      if (data.message.includes("success")) {
         window.location.href = "login.html";
       }
     })
@@ -62,17 +59,11 @@ function register() {
 }
 
 /* =========================
-   LOGOUT
-========================= */
-function logout() {
-  localStorage.removeItem("collexUser");
-  window.location.href = "login.html";
-}
-
-/* =========================
-   ADD PRODUCT (WITH IMAGE)
+   ADD PRODUCT (MOBILE SAFE)
 ========================= */
 function addProduct() {
+  alert("Add Product clicked"); // debug (remove later)
+
   const title = document.getElementById("title").value;
   const price = document.getElementById("price").value;
   const type = document.getElementById("type").value;
@@ -82,15 +73,23 @@ function addProduct() {
   const sellerEmail = localStorage.getItem("collexUser");
 
   if (!title || !price || imageInput.files.length === 0) {
-    alert("Fill all fields & select image");
+    alert("Fill all fields");
+    return;
+  }
+
+  const file = imageInput.files[0];
+
+  // 🔴 MOBILE FIX – image size limit
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Image too large. Please upload below 2MB");
     return;
   }
 
   const reader = new FileReader();
-  reader.readAsDataURL(imageInput.files[0]);
+  reader.readAsDataURL(file);
 
   reader.onload = function () {
-    fetch("https://collex-backend.onrender.com/add-product", {
+    fetch(`${API}/add-product`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -112,9 +111,9 @@ function addProduct() {
 }
 
 /* =========================
-   LOAD PRODUCTS + DELETE (OWNER ONLY)
+   LOAD PRODUCTS
 ========================= */
-fetch("https://collex-backend.onrender.com/products")
+fetch(`${API}/products`)
   .then(res => res.json())
   .then(products => {
     const list = document.getElementById("productList");
@@ -130,53 +129,39 @@ fetch("https://collex-backend.onrender.com/products")
           <button class="btn btn-danger btn-sm w-100 mt-2"
                   onclick="deleteProduct('${p._id}')">
             Delete
-          </button>
-        `;
+          </button>`;
       }
 
       list.innerHTML += `
         <div class="col-md-4 mb-4">
-          <div class="card shadow-sm h-100 position-relative">
-            <span class="price-badge">₹${p.price}</span>
-
-            <img src="${p.image}" class="card-img-top">
-
+          <div class="card shadow-sm h-100">
+            <img src="${p.image}" class="card-img-top"
+                 style="height:200px;object-fit:cover">
             <div class="card-body">
-              <h5 class="card-title">${p.title}</h5>
-              <p class="text-muted small mb-1">${p.type.toUpperCase()}</p>
-              <p class="card-text">${p.description || ""}</p>
+              <h5>${p.title}</h5>
+              <p>₹${p.price} • ${p.type}</p>
+              <small>${p.sellerEmail}</small>
             </div>
-
-            <div class="card-footer bg-white">
-              <small class="text-muted d-block mb-2">
-                ${p.sellerEmail}
-              </small>
-
+            <div class="card-footer">
               <a class="btn btn-success btn-sm w-100"
-                 href="https://wa.me/?text=Hi! I'm interested in your product: ${p.title}"
-                 target="_blank">
+                 target="_blank"
+                 href="https://wa.me/?text=Interested in ${p.title}">
                 WhatsApp
               </a>
-
               ${deleteBtn}
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
     });
-  })
-  .catch(err => console.error(err));
-
+  });
 
 /* =========================
-   DELETE PRODUCT (OWNER ONLY)
+   DELETE PRODUCT
 ========================= */
 function deleteProduct(id) {
-  if (!confirm("Are you sure you want to delete this product?")) return;
-
   const email = localStorage.getItem("collexUser");
 
-  fetch(`https://collex-backend.onrender.com/delete-product/${id}?email=${email}`, {
+  fetch(`${API}/delete-product/${id}?email=${email}`, {
     method: "DELETE"
   })
     .then(res => res.json())
@@ -186,4 +171,3 @@ function deleteProduct(id) {
     })
     .catch(() => alert("Delete failed"));
 }
-
