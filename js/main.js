@@ -73,34 +73,35 @@ function logout() {
 // ADD PRODUCT (SELL / RENT)
 // =========================
 function addProduct() {
-  const title = document.getElementById("title").value;
-  const price = document.getElementById("price").value;
-  const type = document.getElementById("type").value;
-  const description = document.getElementById("description").value;
+  alert("addProduct function reached"); // keep for now
+
+  const title = document.getElementById("title")?.value;
+  const price = document.getElementById("price")?.value;
+  const type = document.getElementById("type")?.value;
+  const description = document.getElementById("description")?.value;
   const imageInput = document.getElementById("image");
-  const phone = document.getElementById("phone").value;
+  const phone = document.getElementById("phone")?.value;
 
   const sellerEmail = localStorage.getItem("collexUser");
 
   if (!sellerEmail) {
-    alert("Please login again");
+    alert("Session expired. Please login again.");
     window.location.href = "login.html";
     return;
   }
 
-  if (!title || !price || imageInput.files.length === 0) {
+  if (!title || !price || !imageInput || imageInput.files.length === 0) {
     alert("Fill all fields");
     return;
   }
 
   if (!phone || phone.length < 10) {
-    alert("Enter valid WhatsApp number (91xxxxxxxxxx)");
+    alert("Enter valid WhatsApp number");
     return;
   }
 
   const file = imageInput.files[0];
 
-  // Mobile safety (image size)
   if (file.size > 2 * 1024 * 1024) {
     alert("Image must be below 2MB");
     return;
@@ -110,7 +111,7 @@ function addProduct() {
   reader.readAsDataURL(file);
 
   reader.onload = function () {
-    fetch(`${API}/add-product`, {
+    fetch("https://collex-backend.onrender.com/add-product", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -126,11 +127,12 @@ function addProduct() {
       .then(res => res.json())
       .then(data => {
         alert(data.message);
-        if (data.message.includes("success")) {
-          window.location.href = "products.html";
-        }
+        window.location.href = "products.html";
       })
-      .catch(() => alert("Add product failed"));
+      .catch(err => {
+        console.error(err);
+        alert("Add product failed");
+      });
   };
 }
 
@@ -209,3 +211,4 @@ function deleteProduct(id) {
     })
     .catch(() => alert("Delete failed"));
 }
+
