@@ -1,44 +1,67 @@
-function addProduct() {
-  const title = document.getElementById("title").value;
-  const price = document.getElementById("price").value;
-  const type = document.getElementById("type").value;
-  const description = document.getElementById("description").value;
-  const imageInput = document.getElementById("image");
-  const phone = document.getElementById("phone").value;
+console.log("main.js loaded ✅");
 
-  const sellerEmail = localStorage.getItem("collexUser");
+const API = "https://collex-backend.onrender.com";
 
-  if (!title || !price || imageInput.files.length === 0) {
-    alert("Fill all fields");
+/* =========================
+   LOGIN
+========================= */
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    alert("Email and password required");
     return;
   }
 
-  if (!phone || phone.length < 10) {
-    alert("Enter valid WhatsApp number");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.readAsDataURL(imageInput.files[0]);
-
-  reader.onload = function () {
-    fetch(`${API}/add-product`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        price,
-        type,
-        description,
-        sellerEmail,
-        phone,
-        image: reader.result
-      })
+  fetch(`${API}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message);
+      if (data.message === "Login successful") {
+        localStorage.setItem("collexUser", email);
+        window.location.href = "dashboard.html";
+      }
     })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message);
-        window.location.href = "products.html";
-      });
-  };
+    .catch(() => alert("Login failed"));
+}
+
+/* =========================
+   REGISTER
+========================= */
+function register() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!name || !email || !password) {
+    alert("All fields required");
+    return;
+  }
+
+  fetch(`${API}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message);
+      if (data.message.includes("success")) {
+        window.location.href = "login.html";
+      }
+    })
+    .catch(() => alert("Registration failed"));
+}
+
+/* =========================
+   LOGOUT
+========================= */
+function logout() {
+  localStorage.removeItem("collexUser");
+  window.location.href = "login.html";
 }
